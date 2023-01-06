@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { GetStaticProps, NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 import { Layout } from '../components/Layout'
 import { Notice, Task } from '../types/types'
 import { supabase } from '../utils/supabase'
 
-export const getStaticProps: GetStaticProps = async () => {
-  console.log('getStaticProps/ssg invoked')
+export const getServerSideProps: GetServerSideProps = async () => {
+  console.log('getServerSideProps/ssr invoked')
 
   const { data: tasks } = await supabase
     .from('todos')
@@ -26,11 +26,11 @@ type StaticProps = {
   notices: Notice[]
 }
 
-const Ssg: NextPage<StaticProps> = ({ tasks, notices }) => {
+const Ssr: NextPage<StaticProps> = ({ tasks, notices }) => {
   const router = useRouter()
   return (
-    <Layout title="SSG">
-      <p className="mb-3 text-blue-500">SSG</p>
+    <Layout title="SSR">
+      <p className="mb-3 text-pink-500">SSR</p>
       <ul className="mb-3">
         {tasks.map((task) => {
           return (
@@ -40,7 +40,6 @@ const Ssg: NextPage<StaticProps> = ({ tasks, notices }) => {
           )
         })}
       </ul>
-
       <ul className="mb-3">
         {notices.map((notice) => {
           return (
@@ -51,15 +50,23 @@ const Ssg: NextPage<StaticProps> = ({ tasks, notices }) => {
         })}
       </ul>
 
-      <Link href="/ssr" prefetch={false} className="my-3 text-xs">
-        Link to ssr
+      <Link href="/ssg" prefetch={false} className="my-3 text-xs">
+        Link to ssg
       </Link>
 
-      <button className="mb-3 text-xs" onClick={() => router.push('/ssr')}>
-        Route to ssr
+      <Link href="/isr" prefetch={false} className="my-3 text-xs">
+        Link to isr
+      </Link>
+
+      <button className="mb-3 text-xs" onClick={() => router.push('/ssg')}>
+        Route to ssg
+      </button>
+
+      <button className="mb-3 text-xs" onClick={() => router.push('/isr')}>
+        Route to isr
       </button>
     </Layout>
   )
 }
 
-export default Ssg
+export default Ssr
